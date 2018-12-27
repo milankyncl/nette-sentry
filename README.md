@@ -1,8 +1,8 @@
-# Sentry for [Nette](https://www.nette.org) framework
-[![Build Status](https://travis-ci.org/nofutur3/nette-sentry.svg?branch=master)](https://travis-ci.org/nofutur3/nette-sentry)
-[![Downloads this Month](https://img.shields.io/packagist/dm/nofutur3/nette-sentry.svg)](https://packagist.org/packages/nofutur3/nette-sentry)
-[![Latest stable](https://img.shields.io/packagist/v/nofutur3/nette-sentry.svg)](https://packagist.org/packages/nofutur3/nette-sentry)
+# Sentry bridge for [Nette](https://www.nette.org) framework
 
+## Prolog
+
+First of all - I do not own the original idea of creating this repository, I forked the code from [nofutur3/nette-sentry](https://github.com/nofutur3/nette-sentry) repository. I updated this repository and posted it to Github for better purpose.
 
 Nette integration for Sentry
 
@@ -10,21 +10,12 @@ Nette integration for Sentry
 
 The recommended installation is using [composer](https://getcomposer.org/). 
 
-_If you are not still using composer, you should check it out. It's 2016(+) afterall._
-
 ```
-composer require nofutur3/nette-sentry
-```
-
-Alternative way - in case you are not able to use composer. Download the source code (ie clone git repo) into your project
-and require it some way. For [nette framework](https://nette.org/en/) like this in your bootstrap file:
-```
-$configurator
-    ->createRobotLoader()
-    ->addDirectory(__DIR__ . 'path/to/library/');
+composer require milankyncl/nette-sentry
 ```
 
 ## Usage
+
 ##### With Nette (2.3+)
 ```
 extensions:
