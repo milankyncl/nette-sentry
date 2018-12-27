@@ -30,10 +30,5 @@ sentry:
 sentry:
     dsn: (your dsn from sentry)
     debug: false
-    user:
-        email: email # email property in IIdentity
-        username: username # username property in IIDentity
-    skip_capture:
-        - 'Nette\Neon\Exception' # will not report these exceptions
     options: # check: https://docs.sentry.io/clients/php/config/
 ```
