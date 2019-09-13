@@ -2,8 +2,6 @@
 
 /**
  * Sentry-Nette extension.
- *
- * @author Milan Kyncl
  * @copyright 2018
  */
 
@@ -13,28 +11,23 @@ use Nette\Configurator;
 use Nette\DI\Compiler;
 use Nette\DI\CompilerExtension;
 use Nette\PhpGenerator\ClassType;
+use Nette\Utils\AssertionException;
 use Nette\Utils\Validators;
 use MilanKyncl\Nette\Sentry\SentryBridge;
-use Tracy\Debugger;
 
 /**
  * Class SentryExtension
- *
- * @package MilanKyncl\Nette\Sentry\DI
  */
-
-class SentryExtension extends CompilerExtension {
-
+class SentryExtension extends CompilerExtension
+{
 	/** @var array */
-
 	private $defaults = [];
 
 	/**
 	 * SentryExtension constructor.
 	 */
-
-	public function __construct() {
-
+	public function __construct()
+	{
 		$this->defaults = $this->getDefaults();
 	}
 
@@ -42,12 +35,11 @@ class SentryExtension extends CompilerExtension {
 	 * afterCompile DI method.
 	 *
 	 * @param ClassType $class
-	 *
-	 * @throws \Nette\Utils\AssertionException
+	 * @return void
+	 * @throws AssertionException
 	 */
-
-	public function afterCompile(ClassType $class) {
-
+	public function afterCompile(ClassType $class)
+	{
 		$config = $this->getConfig($this->defaults);
 
 		Validators::assertField($config, 'dsn', 'string');
@@ -58,9 +50,7 @@ class SentryExtension extends CompilerExtension {
 		else
 			$init = $class->methods['initialize'];
 
-		$code = '$sentry = new '.SentryBridge::class.'(?, ?, ?);' . PHP_EOL;
-		$code .= Debugger::class.'::$onFatalError[] = function($e) use ($sentry) {$sentry->onFatalError($e);};' . PHP_EOL;
-		$code .= Debugger::class.'::setLogger($sentry);';
+		$code = '$sentry = new '.SentryBridge::class.'(?, ?);' . PHP_EOL;
 
 		$init->addBody($code, $config);
 	}
@@ -69,10 +59,10 @@ class SentryExtension extends CompilerExtension {
 	 * register DI method.
 	 *
 	 * @param Configurator $configurator
+	 * @return void
 	 */
-
-	public static function register(Configurator $configurator) {
-
+	public static function register(Configurator $configurator)
+	{
 		$configurator->onCompile[] = function ($config, Compiler $compiler) {
 			$compiler->addExtension('sentry', new SentryExtension());
 		};
@@ -83,14 +73,11 @@ class SentryExtension extends CompilerExtension {
 	 *
 	 * @return array
 	 */
-
-	private function getDefaults() {
-
+	private function getDefaults(): array
+	{
 		$defaults = [];
-
 		$defaults['dsn'] = null;
-		$defaults['debug'] = false;
-		$defaults['options'] = [];
+		$defaults['release'] = null;
 
 		return $defaults;
 	}

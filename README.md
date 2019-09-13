@@ -17,18 +17,19 @@ composer require milankyncl/nette-sentry
 ## Usage
 
 ##### With Nette (2.3+)
+
 ```
 extensions:
-    sentry: Nofutur3\Sentry\DI\SentryExtension
+    sentry: MilanKyncl\Nette\Sentry\DI\SentryExtension
     
 sentry:
     dsn: (your dsn from sentry)
 ```
 
 #### Extended configuration with default values
+
 ```
 sentry:
     dsn: (your dsn from sentry)
-    debug: false
     options: # check: https://docs.sentry.io/clients/php/config/
 ```

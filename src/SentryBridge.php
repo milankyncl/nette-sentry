@@ -2,62 +2,56 @@
 
 /**
  * Sentry-Nette bridge.
- *
- * @author Milan Kyncl
  * @copyright 2018
  */
 
 namespace MilanKyncl\Nette\Sentry;
 
 use Exception;
+use function Sentry\configureScope;
+use function Sentry\init;
+use Sentry\State\Scope;
 use Tracy\Debugger;
 use Tracy\Logger;
 use Nette\Security\User;
 
 /**
  * Class SentryBridge
- *
- * @package MilanKyncl\Nette\Sentry
+ * @author Milan Kyncl <kontakt@milankyncl.cz>
  */
-
-class SentryBridge extends Logger {
-
+class SentryBridge extends Logger
+{
 	/** @var User @inject */
-
 	public $user;
 
-	/** @var \Raven_Client */
-
-	private $client;
-
 	/** @var bool */
-
 	private $isEnabled = true;
 
 	/**
-	 * Sentry constructor.
-	 *
-	 * @param mixed $dsn
-	 * @param mixed $isDebugMode
-	 * @param mixed $options
+	 * SentryBridge constructor.
+	 * @param string $dsn
+	 * @param string $release
 	 */
-
-	public function __construct($dsn, $isDebugMode = false, $options = []) {
-
+	public function __construct($dsn, $release = null)
+	{
 		parent::__construct(Debugger::$logDirectory, Debugger::$email, Debugger::getBlueScreen());
 
-		$this->isEnabled = Debugger::$productionMode || $isDebugMode;
-		$this->isEnabled = true;
-		$this->client = new \Raven_Client($dsn, $options);
+		$settings = [
+			'dsn' => $dsn
+		];
 
-		$sentry = $this;
+		if($release != null) {
+			$settings['release'] = $release;
+		}
 
-		Debugger::$onFatalError[] = function ($error) use ($sentry) {
+		init($settings);
 
-			$sentry->onFatalError($error);
-		};
-
-		Debugger::setLogger($this);
+		configureScope(function (Scope $scope): void {
+			$scope->setUser([
+				'id' => $this->user->getId(),
+				''
+			]);
+		});
 	}
 
 	/**
@@ -65,11 +59,9 @@ class SentryBridge extends Logger {
 	 *
 	 * @param $error
 	 */
-
-	public function onFatalError($error) {
-
-		if ($this->isEnabled) {
-
+	public function onFatalError($error)
+	{
+		if($this->isEnabled) {
 			$this->client->captureException($error);
 		}
 	}
@@ -82,11 +74,9 @@ class SentryBridge extends Logger {
 	 *
 	 * @return null|string
 	 */
-
 	public function log($message, $priority = self::INFO) {
 
-		if ($this->isEnabled) {
-
+		if($this->isEnabled) {
 			$data = $message instanceof Exception ? $this->getExceptionFile($message) : null;
 			$data = $this->formatLogLine($message, $data);
 			$this->client->captureException($message, $data, $priority);
