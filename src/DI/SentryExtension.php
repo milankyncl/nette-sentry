@@ -14,6 +14,7 @@ use Nette\PhpGenerator\ClassType;
 use Nette\Utils\AssertionException;
 use Nette\Utils\Validators;
 use MilanKyncl\Nette\Sentry\SentryBridge;
+use Tracy\Debugger;
 
 /**
  * Class SentryExtension
@@ -50,7 +51,8 @@ class SentryExtension extends CompilerExtension
 		else
 			$init = $class->methods['initialize'];
 
-		$code = '$sentry = new '.SentryBridge::class.'(?, ?);' . PHP_EOL;
+		$code = '$sentry = new '.SentryBridge::class.'($this->getService(\'security.user\'), ?, ?);' . PHP_EOL;
+		$code .= Debugger::class . '::setLogger($sentry);' . PHP_EOL;
 
 		$init->addBody($code, $config);
 	}
